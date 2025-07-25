@@ -28,7 +28,17 @@ function App() {
     setNoteState((prevState) => {
       return {
         ...prevState,
+        selectedNoteId: undefined,
         notes: [...prevState.notes, newNotes],
+      };
+    });
+  }
+
+  function handleCancel() {
+    setNoteState((prevState) => {
+      return {
+        ...prevState,
+        selectedNoteId: undefined,
       };
     });
   }
@@ -36,14 +46,17 @@ function App() {
   let content;
 
   if (noteState.selectedNoteId === null) {
-    content = <NewNote onAdd={handleAddNote} />;
+    content = <NewNote onAdd={handleAddNote} onCancel={handleCancel} />;
   } else if (noteState.selectedNoteId === undefined) {
     content = <NoNoteSelected onStartAddNote={handleStartAddNote} />;
   }
 
   return (
     <main className="min-h-screen flex gap-8">
-      <NotesSidebar onStartAddNote={handleStartAddNote} />
+      <NotesSidebar
+        onStartAddNote={handleStartAddNote}
+        notes={noteState.notes}
+      />
       {content}
     </main>
   );
