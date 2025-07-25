@@ -1,13 +1,22 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import NewNote from "./Components/NewNote";
 import NoNoteSelected from "./Components/NoNoteSelected";
 import NotesSidebar from "./Components/NotesSidebar";
+import SelectedNotes from "./Components/SelectedNotes";
 
 function App() {
-  const [noteState, setNoteState] = useState({
-    selectedNoteId: undefined,
-    notes: [],
+  const [noteState, setNoteState] = useState(() => {
+    const storedNotes = localStorage.getItem("notes");
+    return {
+      selectedNoteId: undefined,
+      notes: storedNotes ? JSON.parse(storedNotes) : [],
+    };
   });
+
+  // Updating localStorage whenever notes changed
+  useEffect(() => {
+    localStorage.setItem("notes", JSON.stringify(noteState.notes));
+  }, [noteState.notes]);
 
   // Start Adding note when button is clicked
   function handleStartAddNote() {
@@ -43,7 +52,36 @@ function App() {
     });
   }
 
-  let content;
+  // Selecting project in sidebar
+  function handleSelectNote(id) {
+    setNoteState((prevState) => {
+      return {
+        ...prevState,
+        selectedNoteId: id,
+      };
+    });
+  }
+
+  // Deleting a note
+  function handleDeleteNote() {
+    setNoteState((prevState) => {
+      return {
+        ...prevState,
+        selectedNoteId: undefined,
+        notes: prevState.notes.filter(
+          (note) => note.id !== prevState.selectedNoteId
+        ),
+      };
+    });
+  }
+
+  const selectedNote = noteState.notes.find(
+    (note) => note.id === noteState.selectedNoteId
+  );
+
+  let content = (
+    <SelectedNotes note={selectedNote} onDelete={handleDeleteNote} />
+  );
 
   if (noteState.selectedNoteId === null) {
     content = <NewNote onAdd={handleAddNote} onCancel={handleCancel} />;
@@ -56,6 +94,7 @@ function App() {
       <NotesSidebar
         onStartAddNote={handleStartAddNote}
         notes={noteState.notes}
+        onSelectAddNote={handleSelectNote}
       />
       {content}
     </main>

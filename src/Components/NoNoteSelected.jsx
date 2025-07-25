@@ -1,10 +1,10 @@
-import imageLogo from "../assets/logo.png";
+import logo from "../assets/logo.png";
 import Button from "./Button";
 
 export default function NoNoteSelected({ onStartAddNote }) {
   return (
     <div className="w-2/3 text-center mt-24">
-      <img src={imageLogo} alt="image-logo" className="h-16 w-16 mx-auto" />
+      <img src={logo} alt="image-logo" className="h-16 w-16 mx-auto" />
       <h2 className="text-xl font-bold my-4 text-stone-500 font-serif">
         No Note Selected
       </h2>
