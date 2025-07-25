@@ -1,7 +1,7 @@
 import imageLogo from "../assets/logo.png";
 import Button from "./Button";
 
-export default function NoNoteSelected() {
+export default function NoNoteSelected({ onStartAddNote }) {
   return (
     <div className="w-2/3 text-center mt-24">
       <img src={imageLogo} alt="image-logo" className="h-16 w-16 mx-auto" />
@@ -15,7 +15,7 @@ export default function NoNoteSelected() {
         Select a note or get started with new one.
       </p>
       <p className="mt-8">
-        <Button>Create New Note</Button>
+        <Button onClick={onStartAddNote}>Create New Note</Button>
       </p>
     </div>
   );
