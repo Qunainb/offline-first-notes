@@ -1,5 +1,11 @@
+import NotesSidebar from "./Components/NotesSidebar";
+
 function App() {
-  return <h1>Offline first notes app</h1>;
+  return (
+    <main className="min-h-screen flex gap-8">
+      <NotesSidebar />
+    </main>
+  );
 }
 
 export default App;
