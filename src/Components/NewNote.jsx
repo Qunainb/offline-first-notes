@@ -1,13 +1,22 @@
-import { useRef } from "react";
+import { useRef, useEffect } from "react";
 import Input from "./Input";
 import Modal from "./Modal";
 
-export default function NewNote({ onAdd, onCancel }) {
+export default function NewNote({ onAdd, onCancel, note, isEdit }) {
   const modal = useRef();
 
   const titleRef = useRef();
   const thoughtsRef = useRef();
   const dateRef = useRef();
+
+  // Pre-fill form with note data if editing
+  useEffect(() => {
+    if (note && isEdit) {
+      titleRef.current.value = note.title;
+      thoughtsRef.current.value = note.thoughts;
+      dateRef.current.value = note.date;
+    }
+  }, [note, isEdit]);
 
   function handleSave() {
     const enteredTitle = titleRef.current.value;
@@ -24,11 +33,18 @@ export default function NewNote({ onAdd, onCancel }) {
       return;
     }
 
-    onAdd({
+    const noteData = {
       title: enteredTitle,
       thoughts: enteredThoughts,
       date: enteredDate,
-    });
+    };
+
+    // If editing, include the existing id
+    if (isEdit && note) {
+      noteData.id = note.id;
+    }
+
+    onAdd(noteData);
   }
 
   return (
@@ -42,7 +58,7 @@ export default function NewNote({ onAdd, onCancel }) {
           by.
         </p>
         <p className="mb-4 text-stone-600 text-sm">
-          Let’s complete all fields before saving!
+          Let's complete all fields before saving!
         </p>
       </Modal>
 
@@ -59,7 +75,7 @@ export default function NewNote({ onAdd, onCancel }) {
             className="px-6 py-2 bg-stone-800 text-stone-50 rounded-md hover:bg-stone-900 cursor-pointer"
             onClick={handleSave}
           >
-            Save
+            {isEdit ? 'Update' : 'Save'}
           </button>
         </menu>
         <div>

@@ -5,9 +5,18 @@ export default function NotesSidebar({
   notes,
   onSelectAddNote,
   selectedNoteId,
+  searchQuery,
+  onSearchChange,
 }) {
   return (
-    <div className="w-1/3 px-8 py-16 bg-stone-900 text-stone-50 rounded-r-2xl md:w-72">
+    <div className="w-1/3 px-8 py-11 bg-stone-900 text-stone-50 rounded-r-2xl md:w-72">
+      <input
+        type="text"
+        className="my-8 h-12 px-4 py-2 text-sm capitalize bg-stone-800 text-stone-100 rounded-md outline-none"
+        placeholder="Find a note..."
+        value={searchQuery}
+        onChange={(e) => onSearchChange(e.target.value)}
+      />
       <h2
         style={{ fontFamily: `"Pacifico", cursive` }}
         className="mb-8 font-bold uppercase tracking-wide md:text-base"
