@@ -8,6 +8,7 @@ import {
   addOrUpdateNote,
   deleteNote as deleteNoteFromDB,
 } from "./utils/notesDB";
+import { syncWithBackend } from "./utils/sync";
 
 function App() {
   const [searchQuery, setSearchQuery] = useState("");
@@ -32,7 +33,78 @@ function App() {
     };
   }, []);
 
-  // Load notes from IndexedDB when app starts
+  // Auto-sync when coming back online
+  useEffect(() => {
+    if (isOnline && noteState.notes.length > 0) {
+      // Auto-sync with a small delay to ensure connection is stable
+      setTimeout(() => {
+        handleSync();
+      }, 1000);
+    }
+  }, [isOnline]);
+
+  // useEffect(() => {
+  //   async function fetchNotes() {
+  //     try {
+  //       let notes = [];
+
+  //       if (navigator.onLine) {
+  //         // ✅ Fetch from backend if online
+  //         const res = await fetch("http://localhost:3000/notes");
+  //         notes = await res.json();
+
+  //         // Save to IndexedDB as well
+  //         for (const note of notes) {
+  //           await addOrUpdateNote(note);
+  //         }
+  //       } else {
+  //         // 👇 Fallback to IndexedDB if offline
+  //         notes = await getAllNotes();
+  //       }
+
+  //       setNoteState((prev) => ({
+  //         ...prev,
+  //         notes: notes || [],
+  //       }));
+  //     } catch (error) {
+  //       console.error("Error loading notes:", error);
+  //     }
+  //   }
+
+  //   fetchNotes();
+  // }, []);
+
+  // Multi-platform sync function
+  async function handleSync() {
+    if (!isOnline) return;
+
+    try {
+      const syncResult = await syncWithBackend(noteState.notes);
+
+      // Update local state with merged notes from backend
+      if (syncResult.mergedNotes) {
+        // Update IndexedDB with merged notes
+        for (const note of syncResult.mergedNotes) {
+          await addOrUpdateNote(note);
+        }
+
+        // Update React state with merged notes
+        setNoteState((prev) => ({
+          ...prev,
+          notes: syncResult.mergedNotes,
+        }));
+
+        console.log("Bidirectional sync completed successfully");
+        console.log(
+          `Synced ${syncResult.syncedNotes} notes from ${syncResult.platform} platform`
+        );
+      }
+    } catch (error) {
+      console.error("Multi-platform sync failed:", error);
+    }
+  }
+
+  // // Load notes from IndexedDB when app starts
   useEffect(() => {
     async function fetchNotes() {
       try {
@@ -147,6 +219,7 @@ function App() {
     (note) => note.id === noteState.selectedNoteId
   );
 
+  // Calculate filtered notes - this should update automatically when notes or searchQuery changes
   const filteredNotes = noteState.notes.filter((note) =>
     note.title.toLowerCase().includes(searchQuery.toLowerCase())
   );

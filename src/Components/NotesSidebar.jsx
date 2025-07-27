@@ -12,7 +12,7 @@ export default function NotesSidebar({
     <div className="w-1/3 px-8 py-11 bg-stone-900 text-stone-50 rounded-r-2xl md:w-72">
       <input
         type="text"
-        className="my-8 h-12 px-4 py-2 text-sm capitalize bg-stone-800 text-stone-100 rounded-md outline-none"
+        className="w-full my-8 h-12 px-4 py-2 text-xs capitalize bg-stone-800 text-stone-100 rounded-md outline-none md:w-[70%] md:placeholder:text-sm"
         placeholder="Find a note..."
         value={searchQuery}
         onChange={(e) => onSearchChange(e.target.value)}
